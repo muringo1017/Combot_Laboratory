@@ -3,18 +3,24 @@ using UnityEngine;
 public class AttackState : BasePlayerState
 {
     private float _attackTimer;
-    private float _attackDuration = 0.4f; // 공격 애니메이션 평균 길이 (조정 필요)
+
 
     public override void OnEnter(PlayerStateMachine stateMachine)
     {
-        base.OnEnter(stateMachine);
+        base.OnEnter(stateMachine); // 공격 실행
         _player.Combat.PerformCurrentAttack();
-        _attackTimer = _attackDuration; // 타이머 설정
+        
+        // 애니메이션 길이 설정 (방법 1: 무기에서 가져오기)
+        _attackTimer = _player.Combat.GetCurrentAttackAnimationLength();
+        
+        // 또는 방법 2: CharacterAnimation에서 실제 클립 길이 가져오기
+        // _attackTimer = _characterAnimation.GetCurrentAnimationLength();
+        
+        Debug.Log($"⚔️ AttackState - 예상 길이: {_attackTimer:F2}s");
     }
     
     public override void OnUpdate()
     {
-        // 타이머를 감소시키고, 0이 되면 Idle 상태로 전환
         _attackTimer -= Time.deltaTime;
         if (_attackTimer <= 0f)
         {

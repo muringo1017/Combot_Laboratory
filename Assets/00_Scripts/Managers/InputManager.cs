@@ -5,11 +5,9 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     private PlayerInputActions _inputActions;
-
     
     //이동 벡터
     public Vector2 MoveInput { get; private set; }
-    
     
     //공격실행
     public event Action<AttackType, bool> OnAttackPerformed;

@@ -11,7 +11,9 @@ public class Pistol : IWeapon
         Data = data;
     }
 
+    private const float PISTOL_ANIMATION_LENGTH = 0.6f;
 
+ 
     public void HandleInput(PlayerCombat combat, AttackType attackType, bool isInputReleased)
     {
         // 실제 공격 입력이 아니거나, 키에서 손을 뗀 입력이면 무시합니다.
@@ -48,6 +50,16 @@ public class Pistol : IWeapon
     public void OnUnequip(PlayerCombat combat)
     {
         Debug.Log("Pistol Unequipped");
+    }
+
+    public float GetCurrentAttackAnimationLength()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public float GetCurrentAttackDamage()
+    {
+        throw new System.NotImplementedException();
     }
 
     // 권총은 콤보가 없으므로 버퍼링 관련 기능은 필요 없습니다.

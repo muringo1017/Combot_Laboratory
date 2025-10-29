@@ -29,6 +29,12 @@ public class MyBT : MonoBehaviour
                     new MyLeaf(ShouldContinueAttack),
                     new MyLeaf(AttackPlayer)
                 }),
+                
+                new MySequence(new List<MyNode>
+                {
+                    new MyLeaf(ShouldContinueAttack),
+                    new MyLeaf(AttackPlayer)
+                }),
                 new MySequence(new List<MyNode>
                 {
                     new MyLeaf(CheckPlayerInRange), 

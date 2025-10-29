@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 20a82af9b53cdb54a9bc1844c8212632
+timeCreated: 1489406381
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 85399
+  packageName: Toon Soldiers - Militia
+  packageVersion: 1.2
+  assetPath: Assets/Toon_Soldiers/ToonSoldiers_militias/sample_scene/TS_militias_demo_scene.unity
+  uploadId: 289114

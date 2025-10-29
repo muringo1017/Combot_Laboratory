@@ -32,6 +32,16 @@ public abstract class BaseWeapon : IWeapon
         // 무기 모델 해제 로직
     }
 
+    public float GetCurrentAttackAnimationLength()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public float GetCurrentAttackDamage()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public ComboState BufferedAttack { get; }
     public void CommitToBufferedAttack()
     {

@@ -4,12 +4,12 @@ using UnityEngine;
 public enum ComboState
 {
     NONE,
-    LightAttack_1, // Z
-    LightAttack_2, // ZZ
-    LightAttack_3, // ZZZ
-    HeavyAttack_1, // X 또는 Z-X
-    HeavyAttack_2, // XX 또는 ZZ-X
-    HeavyAttack_3  // XXX
+    LightAttack_1, 
+    LightAttack_2, 
+    LightAttack_3, 
+    HeavyAttack_1, 
+    HeavyAttack_2, 
+    HeavyAttack_3  
 }
 
 [RequireComponent(typeof(WeaponManager))]
@@ -31,6 +31,8 @@ public class PlayerCombat : MonoBehaviour
 
     // --- 무기 상호작용 ---
     public float pickupRange = 1.5f;
+    
+    [SerializeField] private float attackMoveForce = 1.0f;
 
     private void Awake()
     {
@@ -64,6 +66,10 @@ public class PlayerCombat : MonoBehaviour
 
     public void PerformCurrentAttack()
     {
+        float direction = transform.localScale.x > 0 ? 0.7f : -0.7f;
+        GetComponent<PlayerController>().Move(direction * attackMoveForce);
+        
+        
         if (_weaponManager.HasWeapon)
             _weaponManager.CurrentWeapon.PerformAttack(_characterAnimation);
         else
@@ -102,4 +108,21 @@ public class PlayerCombat : MonoBehaviour
             return _unarmed;
         }
     }
+    
+    public float GetCurrentAttackAnimationLength()
+    {
+        if (_weaponManager.HasWeapon)
+            return _weaponManager.CurrentWeapon.GetCurrentAttackAnimationLength();
+        else
+            return _unarmed.GetCurrentAttackAnimationLength();
+    }
+    
+    public float GetCurrentAttackDamage()
+    {
+        if (_weaponManager.HasWeapon)
+            return _weaponManager.CurrentWeapon.GetCurrentAttackDamage();
+        else
+            return _unarmed.GetCurrentAttackDamage();
+    }
+    
 }

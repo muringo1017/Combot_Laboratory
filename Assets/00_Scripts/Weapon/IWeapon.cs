@@ -6,4 +6,7 @@ public interface IWeapon
     void OnEquip(PlayerCombat combat);
     void OnUnequip(PlayerCombat combat);
     
+    float GetCurrentAttackAnimationLength();
+    float GetCurrentAttackDamage();
+    
 }

@@ -28,8 +28,8 @@ public class Managers : MonoBehaviour
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
-
         CreateManagers();
+
     }
     
     //초기화

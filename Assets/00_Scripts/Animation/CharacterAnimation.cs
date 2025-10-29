@@ -19,8 +19,27 @@ public class CharacterAnimation : MonoBehaviour
     
     // 기존의 일반 Attack 트리거는 이제 사용하지 않으므로 제거하거나 용도 변경이 필요합니다.
     // private static readonly int Attack = Animator.StringToHash("Attack"); 
+    public float GetCurrentAnimationLength()
+    {
+        if (_animator == null) return 1.0f;
+        
+        AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+        return stateInfo.length;
+    }
+    public float GetAnimationLength(string animationName)
+    {
+        if (_animator == null || _animator.runtimeAnimatorController == null)
+            return 1.0f;
 
-
+        AnimationClip[] clips = _animator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip.name == animationName)
+                return clip.length;
+        }
+        
+        return 1.0f;
+    }
     private void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
@@ -69,11 +88,13 @@ public class CharacterAnimation : MonoBehaviour
     public void LongSword_Light_3() => _animator.SetTrigger("LongSword_Light_3"); 
     public void LongSword_Heavy_1() => _animator.SetTrigger("LongSword_Heavy_1");
     public void LongSword_Heavy_2() => _animator.SetTrigger("LongSword_Heavy_2");
-    
-    
     public void LongSword_Heavy_3() => _animator.SetTrigger("LongSword_Heavy_3");
     
     
     public void Pistol_Attack_1() => _animator.SetTrigger("Pistol_Attack_1");
-   
+    
+    [SerializeField] private AttackHitbox[] attackHitboxs;
+    
+    // 애니메이션 이벤트로 호출
+
 }
