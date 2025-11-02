@@ -15,3 +15,8 @@ MonoBehaviour:
   weaponName: Pistol
   weaponType: 2
   weaponPickupPrefab: {fileID: 7829028532260652734, guid: 825d4ed300cba7244b49f3d1a6410c16, type: 3}
+  bulletPrefab: {fileID: 9020984273327353057, guid: 637c5c21273526947a333f28e23fb27a, type: 3}
+  bulletSpeed: 20
+  bulletDamage: 15
+  burstCount: 3
+  burstDelay: 0.1

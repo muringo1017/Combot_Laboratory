@@ -7,8 +7,6 @@ public class Unarmed : IWeapon
 
     // Unarmed 상태의 고유 콤보 로직
     private ComboState _currentComboState = ComboState.NONE;
-    private float _comboResetTimer;
-    private const float COMBO_RESET_TIME = 1.0f;
 
     private Dictionary<ComboState, float> _animationLengths = new Dictionary<ComboState, float>()
     {
@@ -22,12 +20,12 @@ public class Unarmed : IWeapon
     
     private Dictionary<ComboState, float> _attackDamage = new Dictionary<ComboState, float>()
     {
-        { ComboState.LightAttack_1, 10f },
-        { ComboState.LightAttack_2, 15f },
-        { ComboState.LightAttack_3, 20f },
-        { ComboState.HeavyAttack_1, 25f },
-        { ComboState.HeavyAttack_2, 30f },
-        { ComboState.HeavyAttack_3, 40f }
+        { ComboState.LightAttack_1, 5f },
+        { ComboState.LightAttack_2, 6f },
+        { ComboState.LightAttack_3, 7f },
+        { ComboState.HeavyAttack_1, 8f },
+        { ComboState.HeavyAttack_2, 10f },
+        { ComboState.HeavyAttack_3, 12f }
     };
 
     public float GetCurrentAttackDamage()
@@ -35,6 +33,24 @@ public class Unarmed : IWeapon
         if (_attackDamage.ContainsKey(_currentComboState))
             return _attackDamage[_currentComboState];
         return 10f;
+    }
+    
+    public float GetCurrentAttackStaminaCost()
+    {
+        // 약공격(LightAttack)은 2.5, 강공격(HeavyAttack)은 5
+        if (_currentComboState == ComboState.LightAttack_1 || 
+            _currentComboState == ComboState.LightAttack_2 || 
+            _currentComboState == ComboState.LightAttack_3)
+        {
+            return 2.5f; // Z 공격
+        }
+        else if (_currentComboState == ComboState.HeavyAttack_1 || 
+                 _currentComboState == ComboState.HeavyAttack_2 || 
+                 _currentComboState == ComboState.HeavyAttack_3)
+        {
+            return 5f; // X 공격
+        }
+        return 0f;
     }
     
     public float GetCurrentAttackAnimationLength()
@@ -52,16 +68,20 @@ public class Unarmed : IWeapon
     
     public void HandleInput(PlayerCombat combat, AttackType attackType, bool isInputReleased)
     {
-        if (_currentComboState != ComboState.NONE)
+        if (attackType == AttackType.None || isInputReleased) return;
+        
+        // 스테미나 체크 (공격 전에 미리 확인)
+        var playerHealth = combat.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
         {
-            _comboResetTimer -= Time.deltaTime;
-            if (_comboResetTimer <= 0)
+            float staminaCost = (attackType == AttackType.LightAttack) ? 10f : 20f;
+            if (playerHealth.CurrentStamina < staminaCost)
             {
-                _currentComboState = ComboState.NONE;
+                Debug.LogWarning($"[Unarmed] 스테미나 부족! 공격 취소. 필요: {staminaCost}, 현재: {playerHealth.CurrentStamina:F1}");
+                return; // 공격 취소
             }
         }
-
-        if (attackType == AttackType.None || isInputReleased) return;
+        
         var nextState = _currentComboState;
         switch (_currentComboState)
         {
@@ -96,7 +116,6 @@ public class Unarmed : IWeapon
         {
             _currentComboState = nextState;
             combat.PlayerStateMachine.TransitionTo(PlayerState.Attack);
-            _comboResetTimer = _animationLengths[_currentComboState] + 0.2f;
         }
     }
     
@@ -115,4 +134,15 @@ public class Unarmed : IWeapon
 
     public void OnEquip(PlayerCombat combat) { /* 맨손은 특별한 로직 없음 */ }
     public void OnUnequip(PlayerCombat combat) { /* 맨손은 특별한 로직 없음 */ }
+    
+    // 콤보 상태 관리
+    public void ResetCombo()
+    {
+        _currentComboState = ComboState.NONE;
+    }
+    
+    public bool IsInCombo()
+    {
+        return _currentComboState != ComboState.NONE;
+    }
 }

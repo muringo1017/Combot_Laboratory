@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: 5aef2fccae731b74a83125003a7efedd
+AssetOrigin:
+  serializedVersion: 1
+  productId: 299378
+  packageName: Martial Art Animations - Sample
+  packageVersion: 1.0.1
+  assetPath: Assets/Martial Art Animations Sample/Animations/Dodge_F.fbx
+  uploadId: 748292
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -16,8 +23,6 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -44,9 +49,9 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
-      loopBlendOrientation: 1
+      loopBlendOrientation: 0
       loopBlendPositionY: 1
       loopBlendPositionXZ: 0
       keepOriginalOrientation: 1
@@ -900,8 +905,7 @@ ModelImporter:
     hasTranslationDoF: 1
     hasExtraRoot: 0
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 8595e0a7f8893ba46acdf8019eb5a8bf,
-    type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 8595e0a7f8893ba46acdf8019eb5a8bf, type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
@@ -913,10 +917,3 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 299378
-  packageName: Martial Art Animations - Sample
-  packageVersion: 1.0.1
-  assetPath: Assets/Martial Art Animations Sample/Animations/Dodge_F.fbx
-  uploadId: 748292

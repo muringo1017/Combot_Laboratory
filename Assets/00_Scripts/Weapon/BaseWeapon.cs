@@ -41,16 +41,23 @@ public abstract class BaseWeapon : IWeapon
     {
         throw new System.NotImplementedException();
     }
-
-    public ComboState BufferedAttack { get; }
-    public void CommitToBufferedAttack()
+    
+    public virtual float GetCurrentAttackStaminaCost()
     {
-        throw new System.NotImplementedException();
+        // 기본 구현: 약공격 2.5
+        return 2.5f;
     }
 
-    public void ClearBufferedAttack()
+    // 콤보 상태 관리
+    public virtual void ResetCombo()
     {
-        throw new System.NotImplementedException();
+        // 기본 구현: 아무 작업도 하지 않음 (파생 클래스에서 오버라이드 가능)
+    }
+    
+    public virtual bool IsInCombo()
+    {
+        // 기본 구현: 콤보 상태가 아님 (파생 클래스에서 오버라이드 가능)
+        return false;
     }
 
     public WeaponType GetWeaponType() => weaponType;

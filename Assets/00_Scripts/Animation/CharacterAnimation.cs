@@ -7,6 +7,8 @@ public class CharacterAnimation : MonoBehaviour
 
     // 애니메이터 파라미터를 정수(ID)로 미리 변환하여 성능을 높이고 오타를 방지합니다.
     private static readonly int IsMoving = Animator.StringToHash("IsMoving");
+    private static readonly int Dodging = Animator.StringToHash("Dodging");
+    private static readonly int Damaged = Animator.StringToHash("Damaged"); // 피격 트리거
     
     // 콤보 공격용 트리거 파라미터 ID들
     private static readonly int LightAttack1 = Animator.StringToHash("LightAttack_1");
@@ -56,6 +58,21 @@ public class CharacterAnimation : MonoBehaviour
         _animator.SetBool(IsMoving, isMoving);
         // Debug.Log("SetMoving: " + isMoving); // 디버그 로그는 필요한 경우에만 남겨두세요.
     }
+    
+    public void TriggerDodge()
+    {
+        if (_animator == null) return;
+        
+        _animator.SetTrigger(Dodging);
+    }
+    
+    public void TriggerDamaged()
+    {
+        if (_animator == null) return;
+        
+        _animator.SetTrigger(Damaged);
+        Debug.Log("[CharacterAnimation] Damaged 트리거 재생");
+    }
 
     // --- 콤보 공격 애니메이션 함수들 ---
 
@@ -92,6 +109,7 @@ public class CharacterAnimation : MonoBehaviour
     
     
     public void Pistol_Attack_1() => _animator.SetTrigger("Pistol_Attack_1");
+    public void Pistol_Attack_2() => _animator.SetTrigger("Pistol_Attack_2");
     
     [SerializeField] private AttackHitbox[] attackHitboxs;
     

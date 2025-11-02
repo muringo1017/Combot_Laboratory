@@ -2,16 +2,23 @@ using UnityEngine;
 
 public class SideScrollCamera : MonoBehaviour
 {
-    // ... (이전과 동일한 public 변수들)
     public Transform target;
     public float smoothTime = 0.3f; 
     public float fixedYPosition = 5f; 
     public float fixedZPosition = -10f; 
 
     private Vector3 velocity = Vector3.zero;
+    private Vector3 _shakeOffset = Vector3.zero; // CameraShake offset
     
-    // 💡 변경: LateUpdate 대신 FixedUpdate를 사용하여 물리 주기와 동기화
-    void FixedUpdate() 
+    // CameraShake에서 호출할 수 있도록 public으로
+    public Vector3 ShakeOffset
+    {
+        get => _shakeOffset;
+        set => _shakeOffset = value;
+    }
+    
+    // 💡 변경: LateUpdate로 변경하여 CameraShake 이후에 실행
+    void LateUpdate() 
     {
         if (target == null) return;
 
@@ -30,7 +37,7 @@ public class SideScrollCamera : MonoBehaviour
             smoothTime
         );
         
-        // 3. 카메라 위치 업데이트
-        transform.position = smoothedPosition;
+        // 3. 카메라 위치 업데이트 (shake offset 적용)
+        transform.position = smoothedPosition + _shakeOffset;
     }
 }

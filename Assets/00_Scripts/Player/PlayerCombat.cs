@@ -20,6 +20,7 @@ public class PlayerCombat : MonoBehaviour
     private WeaponManager _weaponManager;
     private CharacterAnimation _characterAnimation;
     private PlayerStateMachine _stateMachine;
+    private PlayerController _playerController;
 
     public PlayerStateMachine PlayerStateMachine => _stateMachine;
 
@@ -31,8 +32,10 @@ public class PlayerCombat : MonoBehaviour
 
     // --- 무기 상호작용 ---
     public float pickupRange = 1.5f;
+    [SerializeField] private LayerMask pickupLayer;
     
     [SerializeField] private float attackMoveForce = 1.0f;
+    public float AttackMoveForce => attackMoveForce;
 
     private void Awake()
     {
@@ -40,8 +43,21 @@ public class PlayerCombat : MonoBehaviour
         _characterAnimation = GetComponentInChildren<CharacterAnimation>();
         _stateMachine = GetComponent<PlayerStateMachine>();
         _weaponManager = GetComponent<WeaponManager>();
+        _playerController = GetComponent<PlayerController>();
 
         _unarmed = new Unarmed(unarmedWeaponData);
+    }
+
+    private void OnEnable()
+    {
+        if (_weaponManager != null)
+            _weaponManager.OnWeaponChanged += HandleWeaponChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (_weaponManager != null)
+            _weaponManager.OnWeaponChanged -= HandleWeaponChanged;
     }
 
     private void Update()
@@ -66,8 +82,41 @@ public class PlayerCombat : MonoBehaviour
 
     public void PerformCurrentAttack()
     {
-        float direction = transform.localScale.x > 0 ? 0.7f : -0.7f;
-        GetComponent<PlayerController>().Move(direction * attackMoveForce);
+        // Range weapon(Pistol)이 아닌 경우에만 moveforce 적용
+        bool isRangeWeapon = _weaponManager.HasWeapon && _weaponManager.CurrentWeapon is Pistol;
+        
+        if (!isRangeWeapon)
+        {
+            float baseDir = transform.localScale.x > 0 ? 1f : -1f;
+            float impulse = baseDir * attackMoveForce;
+            
+            // 디버그 로그 추가
+            Debug.Log($"공격 이동: baseDir={baseDir}, attackMoveForce={attackMoveForce}, impulse={impulse}");
+            
+            if (_playerController != null)
+            {
+                var rb = _playerController.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    Vector3 velocity = rb.linearVelocity;
+                    velocity.x = impulse;
+                    rb.linearVelocity = velocity;
+                    Debug.Log($"Rigidbody velocity 설정: {rb.linearVelocity}");
+                }
+                else
+                {
+                    Debug.LogWarning("Rigidbody를 찾을 수 없습니다!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("PlayerController를 찾을 수 없습니다!");
+            }
+        }
+        else
+        {
+            Debug.Log("Range weapon 사용 - moveforce 적용 안함");
+        }
         
         
         if (_weaponManager.HasWeapon)
@@ -85,18 +134,39 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private void TryToPickupWeapon()
-{
-    Collider[] colliders = Physics.OverlapSphere(transform.position, pickupRange);
-    foreach (var collider in colliders)
     {
-        if (collider.TryGetComponent<WeaponPickup>(out var weaponPickup))
+        int layerMask = pickupLayer.value == 0 ? ~0 : pickupLayer.value; // 인스펙터 미설정 시 전체 레이어 검색
+        Collider[] colliders = Physics.OverlapSphere(
+            transform.position,
+            pickupRange,
+            layerMask,
+            QueryTriggerInteraction.Collide
+        );
+
+        WeaponPickup closest = null;
+        float bestSqr = float.MaxValue;
+
+        foreach (var collider in colliders)
         {
-            // [수정] weaponPickup 컴포넌트 자체를 넘겨주고, 더 이상 여기서 Destroy하지 않습니다.
-            _weaponManager.EquipWeapon(weaponPickup);
-            return; 
+            if (collider.TryGetComponent<WeaponPickup>(out var weaponPickup))
+            {
+                float sqr = (weaponPickup.transform.position - transform.position).sqrMagnitude;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    closest = weaponPickup;
+                }
+            }
         }
+
+        if (closest != null)
+            _weaponManager.EquipWeapon(closest);
     }
-}
+
+    private void HandleWeaponChanged(IWeapon newWeapon)
+    {
+        // TODO: UI 갱신/콤보 리셋 등 필요 시 구현
+    }
     public IWeapon GetCurrentWeaponStrategy()
     {
         if (_weaponManager.HasWeapon)
@@ -123,6 +193,20 @@ public class PlayerCombat : MonoBehaviour
             return _weaponManager.CurrentWeapon.GetCurrentAttackDamage();
         else
             return _unarmed.GetCurrentAttackDamage();
+    }
+    
+    public float GetCurrentAttackStaminaCost()
+    {
+        if (_weaponManager.HasWeapon)
+            return _weaponManager.CurrentWeapon.GetCurrentAttackStaminaCost();
+        else
+            return _unarmed.GetCurrentAttackStaminaCost();
+    }
+    
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, pickupRange);
     }
     
 }

@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "PlayerInputAction",
     "maps": [
         {
@@ -108,6 +109,15 @@
                     "name": "WeaponInteract",
                     "type": "Button",
                     "id": "96afa8e3-b54b-4b2f-a75a-37d9cf71c702",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Dodge",
+                    "type": "Button",
+                    "id": "07a0abca-72ac-41e2-bd03-54b5afeba3de",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -530,6 +540,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "WeaponInteract",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6e73fefb-0309-4608-85fd-d0a194545258",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dodge",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

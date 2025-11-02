@@ -7,8 +7,6 @@ public class LongSword : IWeapon
 
     // LongSword만의 고유 콤보 상태
     private ComboState _currentComboState = ComboState.NONE;
-    private float _comboResetTimer;
-    private const float COMBO_RESET_TIME = 1.2f; // 장검은 약간 더 긴 콤보 시간을 가질 수 있습니다.
 
     public LongSword(WeaponData data)
     {
@@ -48,20 +46,40 @@ public class LongSword : IWeapon
             return _attackDamage[_currentComboState];
         return 10f;
     }
+    
+    public float GetCurrentAttackStaminaCost()
+    {
+        // 약공격(LightAttack)은 2.5, 강공격(HeavyAttack)은 5
+        if (_currentComboState == ComboState.LightAttack_1 || 
+            _currentComboState == ComboState.LightAttack_2 || 
+            _currentComboState == ComboState.LightAttack_3)
+        {
+            return 2.5f; // Z 공격
+        }
+        else if (_currentComboState == ComboState.HeavyAttack_1 || 
+                 _currentComboState == ComboState.HeavyAttack_2 || 
+                 _currentComboState == ComboState.HeavyAttack_3)
+        {
+            return 5f; // X 공격
+        }
+        return 0f;
+    }
 
     public void HandleInput(PlayerCombat combat, AttackType attackType, bool isInputReleased)
     {
-        // 매 프레임 호출되며 콤보 타이머를 업데이트합니다.
-        if (_currentComboState != ComboState.NONE)
+        if (attackType == AttackType.None || isInputReleased) return;
+
+        // 스테미나 체크 (공격 전에 미리 확인)
+        var playerHealth = combat.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
         {
-            _comboResetTimer -= Time.deltaTime;
-            if (_comboResetTimer <= 0)
+            float staminaCost = (attackType == AttackType.LightAttack) ? 10f : 20f;
+            if (playerHealth.CurrentStamina < staminaCost)
             {
-                _currentComboState = ComboState.NONE;
+                Debug.LogWarning($"[LongSword] 스테미나 부족! 공격 취소. 필요: {staminaCost}, 현재: {playerHealth.CurrentStamina:F1}");
+                return; // 공격 취소
             }
         }
-        
-        if (attackType == AttackType.None || isInputReleased) return;
 
         var nextState = _currentComboState;
         // --- LongSword만의 다른 콤보 트리 ---
@@ -96,7 +114,6 @@ public class LongSword : IWeapon
             _currentComboState = nextState;
             // PlayerCombat을 통해 상태 머신에 상태 전환을 요청합니다.
             combat.PlayerStateMachine.TransitionTo(PlayerState.Attack);
-            _comboResetTimer = _animationLengths[_currentComboState] + 0.2f;
         }
     }
 
@@ -115,28 +132,39 @@ public class LongSword : IWeapon
             case ComboState.HeavyAttack_2: characterAnim.LongSword_Heavy_2(); break; 
             case ComboState.HeavyAttack_3: characterAnim.LongSword_Heavy_3(); break;
         }
+        
+        // LongSword 공격 시 히트박스 체크
+        CheckForHit(characterAnim);
+    }
+    
+    private void CheckForHit(CharacterAnimation characterAnim)
+    {
+        // CharacterAnimation을 통해 AttackHitbox에 접근
+        var attackHitbox = characterAnim.GetComponentInChildren<AttackHitbox>();
+        if (attackHitbox != null)
+        {
+            attackHitbox.CheckForHit();
+        }
     }
 
     public void OnEquip(PlayerCombat combat)
     {
-        Debug.Log("LongSword Equipped");
         // 여기에 장검을 장착했을 때 모델의 손에 칼을 보이게 하는 로직 등을 추가할 수 있습니다.
     }
 
     public void OnUnequip(PlayerCombat combat)
     {
-        Debug.Log("LongSword Unequipped");
         // 장착 해제 시 칼을 보이지 않게 하는 로직 등을 추가할 수 있습니다.
     }
-
-    public ComboState BufferedAttack { get; }
-    public void CommitToBufferedAttack()
+    
+    // 콤보 상태 관리
+    public void ResetCombo()
     {
-        throw new System.NotImplementedException();
+        _currentComboState = ComboState.NONE;
     }
-
-    public void ClearBufferedAttack()
+    
+    public bool IsInCombo()
     {
-        throw new System.NotImplementedException();
+        return _currentComboState != ComboState.NONE;
     }
 }

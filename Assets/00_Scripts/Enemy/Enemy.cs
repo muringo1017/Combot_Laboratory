@@ -1,23 +1,31 @@
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+/// <summary>
+/// 기존 Enemy - 호환성을 위해 HandgunEnemy를 상속받도록 변경
+/// (기존 프리팹들이 작동하도록 유지)
+/// </summary>
+public class Enemy : HandgunEnemy
 {
-    [SerializeField] private float health = 100f;
+    // 기존 Enemy를 HandgunEnemy로 변경하여 호환성 유지
+    // 모든 기능은 HandgunEnemy와 BaseEnemy에서 제공됨
     
-    public void TakeDamage(float damage)
+    protected override void Awake()
     {
-        health -= damage;
-        Debug.Log($"{gameObject.name} 체력: {health}");
+        base.Awake();
         
-        if (health <= 0)
-        {
-            Die();
-        }
+        // MyBT와의 호환성을 위한 초기화
+        Debug.Log($"[Enemy] 초기화 완료 (HandgunEnemy 타입)");
     }
     
-    private void Die()
+    // MyBT 호환성을 위한 레거시 프로퍼티들
+    // CanShoot는 BaseEnemy에서 제공됨 (canShoot 필드)
+    public float ShootRange => GetAttackRange();
+    public bool IsShooting => !CanAttack();
+    
+    // MyBT 호환성을 위한 레거시 메서드
+    public void StartShootCoroutine(Transform target)
     {
-        Debug.Log($"{gameObject.name} 사망!");
-        Destroy(gameObject);
+        Debug.Log($"[Enemy] StartShootCoroutine 호출됨! target={target?.name}");
+        PerformAttack(target);
     }
 }
